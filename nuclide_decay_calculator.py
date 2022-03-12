@@ -1,72 +1,58 @@
-""" Determines the type of particle decay of two elements and the daughter
-nuclide of an element and a particle """
+from tables import *
+from colorama import *
 
-periodic_table = ["0", "H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne",
-"Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar", "K", "Ca", "Sc", "Ti", "V", "Cr",
-"Mn", "Fe", "Co", "Ni", "Cu", "Zn", "Ga", "Ge", "As", "Se", "Br", "Kr", "Rb",
-"Sr", "Y", "Zr", "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn",
-"Sb", "Te", "I", "Xe", "Cs", "Ba", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu",
-"Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu", "Hf", "Ta", "W", "Re", "Os",
-"Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At", "Rn", "Fr", "Ra", "Ac",
-"Th", "Pa", "U", "Np", "Pu", "Am", "Cm", "Bk", "Cf", "Es", "Fm", "Md", "No",
-"Lr", "Rf", "Db", "Sg", "Bh", "Hs", "Mt", "Ds", "Rg", "Cn", "Nh", "Fl", "Mc",
-"Lv", "Ts", "Og"]
-particles = {'4, 2' : 'alpha', '0, -1' : 'beta', '0, 1' : 'positron', '1, 0' :
-'neutron', '1, 1' : 'proton', '0, 0' : 'gamma'}
-particles_2 = {'alpha' : '4, 2', 'beta' : '0, -1', 'positron' : '0, 1',
-'neutron': '1, 0', 'proton' : '1, 1', 'gamma': '0, 0'}
+# Add color for output
+C = Fore.LIGHTCYAN_EX
+Y = Fore.LIGHTYELLOW_EX
+W = Fore.LIGHTWHITE_EX
 
-def type_of_decay(left_element, right_element):
-    """
-    Prints the type of decay of two elements
+def type_of_decay(l_el, r_el):
+    try:
+        # Search periodic table
+        for el in ElementData.table:       
+            if el in r_el.split("-")[0]:
+                atomic_right = ElementData.table.index(el)
+                mass_right = int(r_el.split("-")[1])         
+        
+            if el in l_el.split("-")[0]:
+                atomic_left = ElementData.table.index(el)
+                mass_left = int(l_el.split("-")[1])            
+    
+        # Difference
+        atomic = atomic_left - atomic_right
+        mass = mass_left - mass_right  
+    
+        # Return Decay
+        return ElementData.subpart[f'{atomic}, {mass}']
 
-        Parameters:
-                left_element (str): An element and its mass number (e.g. S-26)
-                right_element (str): An element and its mass number (e.g. P-25)
+    except Exception as e:
+        print(f'{e}')    
+    
+def daughter_nuclide(l_el, _particle):
+    try:
+        for el in ElementData.table:    
+            if el in l_el.split("-")[0]:
+                atomic_numpl = ElementData.table.index(el)
+                mass_numpl = int(l_el.split("-")[1])
 
-        Prints:
-                type of decay (str; e.g. proton)
-    """
-    left_element_split = left_element.split("-")
-    atomic_number_left = periodic_table.index(left_element_split[0])
-    mass_number_left = left_element_split[1]
+            # Loops for Validation, saves time
+        for mass, particle in ElementData.subpart.items():
+            if _particle in particle:        
+                atom_nump = int(mass.split(', ')[0])
+                mass_nump = int(mass.split(', ')[1])
 
-    right_element_split = right_element.split("-")
-    atomic_number_right = periodic_table.index(right_element_split[0])
-    mass_number_right = right_element_split[1]
+        # Difference  
+        dghtr_atom = atomic_numpl - atom_nump                                
+        dghtr_mass = mass_numpl - mass_nump        
 
-    atomic_difference = atomic_number_left - atomic_number_right
-    mass_difference = int(mass_number_left) - int(mass_number_right)
-    decay_number = str(mass_difference) + ", " + str(atomic_difference)
+        return f'{ElementData.table[dghtr_atom]}-{dghtr_mass}'
 
-    for x in particles:
-        if x == decay_number:
-            print(particles[x])
+    except Exception as e:
+        print(f'{e}') 
 
-def daughter_nuclide(left_element, particle):
-    """
-    Prints the daughter nuclide of an element and a particle
+# Results
+type = type_of_decay('S-26', 'P-25')
+nucl = daughter_nuclide('N-10', 'proton')
 
-        Parameters:
-                left_element (str): An element and its mass number (e.g. N-10)
-                particle (str): A nuclear particle (e.g. proton)
-
-        Prints:
-                daughter nuclide element (str; e.g. C-9)
-    """
-    left_element_split = left_element.split("-")
-    atomic_number_left = periodic_table.index(left_element_split[0])
-    mass_number_left = left_element_split[1]
-
-    particle = particles_2[particle]
-    particle_split = particle.split(", ")
-    mass_number_particle = particle_split[0]
-    atomic_number_particle = particle_split[1]
-
-    mass_number_dn = int(mass_number_left) - int(mass_number_particle)
-    atomic_number_dn = atomic_number_left - int(atomic_number_particle)
-    print(periodic_table[atomic_number_dn] + "-" + str(mass_number_dn))
-
-# Should print 'proton' and 'C-9' respectively.
-type_of_decay('S-26', 'P-25')
-daughter_nuclide('N-10', 'proton')
+# Output formatted
+print(f'{C}Type of Decay: {Y}{type.title()}\n{C}Daughter Nuclide: {Y}{nucl}{W}')
