@@ -12,6 +12,5 @@ number and a particle in order to get their daughter nuclide:
 
 `daughter_nuclide('N-10', 'proton')`
 
-Output
 ![image](https://user-images.githubusercontent.com/987794/158034958-c77c0c1c-4cc7-4416-b113-6588325111b0.png)
 
